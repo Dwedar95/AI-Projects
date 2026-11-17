@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llmops-inference
+  labels:
+    app.kubernetes.io/name: llmops-inference
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: llmops-inference
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

@@ -1,0 +1,5 @@
+{
+  "_source": "intent-classifier trained by examples/train_intent_model.py with default arguments, evaluated on benchmarks/intent_benchmark.jsonl in the authoring container",
+  "accuracy": 0.8625,
+  "macro_f1": 0.8633
+}

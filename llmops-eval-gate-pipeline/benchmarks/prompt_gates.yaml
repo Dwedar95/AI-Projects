@@ -1,0 +1,17 @@
+# Evaluation gates for prompt versions evaluated with an LLM provider.
+# With the offline mock provider latency is simulated (linear in prompt tokens),
+# so the latency and cost rules gate prompt length growth.
+gates:
+  - metric: accuracy
+    direction: higher_is_better
+    min: 0.75
+    max_regression: 0.02
+  - metric: macro_f1
+    direction: higher_is_better
+    max_regression: 0.02
+  - metric: latency_p95_ms
+    direction: lower_is_better
+    max_regression_pct: 15
+  - metric: cost_per_1k_requests_usd
+    direction: lower_is_better
+    max_regression_pct: 25

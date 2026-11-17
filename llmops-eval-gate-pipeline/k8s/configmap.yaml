@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: llmops-inference-config
+  labels:
+    app.kubernetes.io/name: llmops-inference
+data:
+  LLMOPS_REGISTRY: /registry
+  LLMOPS_MODEL: intent-classifier
+  LLMOPS_BUDGETS: /config/budgets.json
+  LLMOPS_USAGE_LOG: /var/log/llmops/usage.jsonl
+  budgets.json: |
+    {
+      "default": {"monthly_tokens": 5000000, "monthly_usd": 50.0},
+      "support-bot": {"monthly_tokens": 20000000, "monthly_usd": 200.0}
+    }

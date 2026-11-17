@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llmops-inference
+  labels:
+    app.kubernetes.io/name: llmops-inference
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llmops-inference
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: llmops-inference
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: inference
+          image: ghcr.io/example/llmops-inference:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: llmops-inference-config
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: registry
+              mountPath: /registry
+              readOnly: true
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: usage-log
+              mountPath: /var/log/llmops
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: registry
+          persistentVolumeClaim:
+            claimName: llmops-registry
+            readOnly: true
+        - name: config
+          configMap:
+            name: llmops-inference-config
+            items:
+              - key: budgets.json
+                path: budgets.json
+        - name: usage-log
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

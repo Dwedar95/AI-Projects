@@ -1,0 +1,21 @@
+# Drift alert rules. PSI reading: < 0.1 stable, 0.1 to 0.25 moderate, > 0.25 significant.
+alerts:
+  - metric: score_psi
+    warn: 0.10
+    critical: 0.25
+  - metric: label_psi
+    warn: 0.10
+    critical: 0.25
+  - metric: centroid_distance_psi
+    warn: 0.10
+    critical: 0.25
+  - metric: drifted_component_share
+    warn: 0.25
+    critical: 0.50
+  - metric: mean_score_drop
+    warn: 0.03
+    critical: 0.08
+  - metric: score_ks_pvalue
+    direction: below
+    warn: 0.01
+    critical: 0.0001

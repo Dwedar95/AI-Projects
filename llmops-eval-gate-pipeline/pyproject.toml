@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llmops-eval-gate-pipeline"
+version = "0.1.0"
+description = "Minimal LLMOps platform core: registry, evaluation gates, drift monitoring, cost governance and an ONNX optimisation benchmark"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "M. Emad Dwedar", email = "mohamed.dwedar@tum.de" }]
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "scikit-learn>=1.4",
+    "pydantic>=2.6",
+    "pyyaml>=6",
+    "fastapi>=0.110",
+    "onnx>=1.16",
+    "onnxruntime>=1.18",
+    "skl2onnx>=1.17",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5", "httpx>=0.27", "uvicorn>=0.29"]
+openai = ["openai>=1.30"]
+
+[project.scripts]
+llmops = "llmops_gate.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

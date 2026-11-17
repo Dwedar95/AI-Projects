@@ -1,0 +1,20 @@
+# Evaluation gates for the ONNX intent classifier.
+# Absolute limits always apply. Regression limits apply when a baseline exists
+# (the current production version or an explicit --baseline-metrics file).
+gates:
+  - metric: accuracy
+    direction: higher_is_better
+    min: 0.80
+    max_regression: 0.02
+  - metric: macro_f1
+    direction: higher_is_better
+    min: 0.78
+    max_regression: 0.02
+  # Real wall-clock latency of embedding plus ONNX inference on one CPU thread.
+  # Only an absolute budget: relative latency checks are too noisy on shared CI runners.
+  - metric: latency_p95_ms
+    direction: lower_is_better
+    max: 5.0
+  - metric: cost_per_1k_requests_usd
+    direction: lower_is_better
+    max: 0.01
