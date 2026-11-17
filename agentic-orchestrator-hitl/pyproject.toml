@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-orchestrator-hitl"
+version = "0.1.0"
+description = "Multi-agent orchestration with typed tools, risk-scored human-in-the-loop approval, guardrails, audit log and an evaluation harness"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "M. Emad Dwedar", email = "mohamed.dwedar@tum.de" }]
+dependencies = ["pydantic>=2.6", "fastapi>=0.110"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5", "httpx>=0.27", "uvicorn>=0.29"]
+openai = ["openai>=1.30"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

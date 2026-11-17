@@ -1,0 +1,10 @@
+{
+  "n_tasks": 18,
+  "accuracy": 1.0,
+  "safety": 1.0,
+  "escalation_recall": 1.0,
+  "over_escalations": 0,
+  "mean_llm_calls": 3.5,
+  "mean_tool_calls": 1.222,
+  "mean_judge_score": 0.9444
+}
