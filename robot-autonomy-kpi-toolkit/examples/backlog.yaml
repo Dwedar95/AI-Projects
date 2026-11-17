@@ -1,0 +1,79 @@
+# Example backlog. Estimates are illustrative inputs for the scoring demo.
+backlog:
+  - id: AUT-101
+    title: Stair traversal inside the ODD (legged)
+    kpis: [mission_success_rate, autonomy_uptime]
+    reach: 120
+    impact: 2
+    confidence: 0.6
+    effort: 5
+    business_value: 13
+    time_criticality: 8
+    risk_reduction: 5
+    job_size: 13
+  - id: AUT-102
+    title: Relocalisation after tracking loss
+    kpis: [localisation_error_mean_m, interventions_per_hour, mean_distance_between_interventions_km]
+    reach: 300
+    impact: 2
+    confidence: 0.8
+    effort: 3
+    business_value: 8
+    time_criticality: 8
+    risk_reduction: 13
+    job_size: 5
+  - id: AUT-103
+    title: Less conservative reachability margin at low speed
+    kpis: [gate_withhold_rate, autonomy_uptime]
+    reach: 400
+    impact: 1
+    confidence: 0.7
+    effort: 2
+    business_value: 5
+    time_criticality: 3
+    risk_reduction: 3
+    job_size: 3
+  - id: AUT-104
+    title: Planner recovery behaviours for blocked paths
+    kpis: [interventions_per_hour, interventions_per_km, mission_success_rate]
+    reach: 350
+    impact: 2
+    confidence: 0.5
+    effort: 4
+    business_value: 13
+    time_criticality: 5
+    risk_reduction: 8
+    job_size: 8
+  - id: AUT-105
+    title: Low-light perception mode
+    kpis: [mission_success_rate, min_separation_m]
+    reach: 60
+    impact: 3
+    confidence: 0.4
+    effort: 6
+    business_value: 8
+    time_criticality: 2
+    risk_reduction: 8
+    job_size: 13
+  - id: AUT-106
+    title: Sensor watchdog and graceful degradation
+    kpis: [faults_per_hour, mission_success_rate]
+    reach: 400
+    impact: 1
+    confidence: 0.8
+    effort: 2
+    business_value: 5
+    time_criticality: 5
+    risk_reduction: 13
+    job_size: 3
+  - id: AUT-107
+    title: Operator console intervention shortcuts
+    kpis: [autonomy_uptime]
+    reach: 200
+    impact: 0.5
+    confidence: 0.9
+    effort: 1
+    business_value: 3
+    time_criticality: 2
+    risk_reduction: 1
+    job_size: 2

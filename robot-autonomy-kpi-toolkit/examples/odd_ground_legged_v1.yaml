@@ -1,0 +1,17 @@
+# Example Operational Design Domain. Values are illustrative, not from a real product.
+odd:
+  name: campus-and-site-patrol
+  version: "1.0"
+  platforms: [legged, ground, aerial]
+  environment:
+    allowed: [indoor_warehouse, outdoor_campus, construction_site]
+  terrain:
+    allowed: [flat, gravel, grass]   # stairs are outside ODD 1.0, see docs/prd_stair_traversal.md
+    max_slope_deg: 15
+  lighting:
+    min_lux: 50
+    max_lux: 100000
+  speed:
+    max_mps: 1.5
+  connectivity:
+    max_latency_ms: 300

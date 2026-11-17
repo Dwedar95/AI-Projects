@@ -1,0 +1,21 @@
+# Release gate thresholds. max_relative_regression is relative to the baseline value.
+alpha: 0.05
+gates:
+  mission_success_rate:
+    max_relative_regression: 0.05
+    min_value: 0.80
+  interventions_per_hour:
+    max_relative_regression: 0.15
+  mean_distance_between_interventions_km:
+    max_relative_regression: 0.15
+  gate_withhold_rate:
+    max_relative_regression: 0.25
+    max_value: 0.10
+  min_separation_m:
+    max_relative_regression: 0.20
+    min_value: 0.25
+  autonomy_uptime:
+    max_relative_regression: 0.03
+  localisation_error_mean_m:
+    max_relative_regression: 0.15
+    max_value: 0.15
