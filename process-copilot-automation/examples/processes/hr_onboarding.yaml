@@ -1,0 +1,100 @@
+# Example process: HR onboarding questions. All employees and policies are fictional.
+id: hr_onboarding
+name: HR onboarding questions
+description: New employees ask onboarding questions. Sensitive topics always go to an HR partner.
+owner: Head of HR Services
+sla_minutes: 20
+cost_budget_usd: 0.01
+knowledge_base: ../knowledge
+handoff_manual_minutes: 8
+inputs: [employee_id, question]
+allowed_tools: [hr.get_employee, hr.create_onboarding_task, ticketing.create_ticket]
+
+steps:
+  - id: get_employee
+    type: action
+    name: Read the employee record
+    role: HR service agent
+    system: HR
+    manual_minutes: 0.5
+    tool: hr.get_employee
+    args: {employee_id: "{{ input.employee_id }}"}
+    output: employee
+
+  - id: classify_topic
+    type: prompt
+    task: classify
+    name: Classify the topic
+    role: HR service agent
+    system: HR
+    manual_minutes: 1.0
+    data_classification: confidential
+    prompt: Classify the employee question into one topic. Sensitive topics have priority.
+    input: "{{ input.question }}"
+    labels:
+      sensitive: [harassment, discrimination, grievance, dispute, medical, salary dispute]
+      it_equipment: [laptop, monitor, vpn, password, account, equipment]
+      leave: [vacation, leave, holiday]
+      payroll: [payroll, payslip, salary, paid]
+      benefits: [benefits, pension, insurance]
+    min_confidence: 0.6
+    output: topic
+
+  - id: route_topic
+    type: decision
+    role: HR service agent
+    branches:
+      - {when: "topic.label == 'sensitive'", goto: hr_partner}
+    default: answer_question
+
+  - id: answer_question
+    type: rag
+    name: Answer from the handbook
+    role: HR service agent
+    system: Knowledge base
+    sla_minutes: 5
+    manual_minutes: 4.0
+    data_classification: confidential
+    query: "{{ input.question }}"
+    min_confidence: 0.5
+    output: answer
+
+  - id: needs_equipment
+    type: decision
+    role: HR service agent
+    branches:
+      - {when: "topic.label == 'it_equipment'", goto: create_it_task}
+    default: log_answer
+
+  - id: create_it_task
+    type: action
+    name: Create an IT onboarding task
+    role: HR service agent
+    system: HR
+    manual_minutes: 1.5
+    tool: hr.create_onboarding_task
+    args: {employee_id: "{{ employee.employee_id }}", task: "IT request: {{ input.question }}"}
+    output: it_task
+
+  - id: log_answer
+    type: action
+    name: Log the answer
+    role: HR service agent
+    system: Ticketing
+    manual_minutes: 0.5
+    tool: ticketing.create_ticket
+    args:
+      queue: hr-onboarding
+      subject: "Onboarding question from {{ employee.employee_id }}"
+      body: "{{ answer.answer }}"
+      status: resolved
+    output: ticket
+    next: end
+
+  - id: hr_partner
+    type: human
+    name: Personal conversation with an HR partner
+    role: HR partner
+    system: HR
+    manual_minutes: 12.0
+    next: end

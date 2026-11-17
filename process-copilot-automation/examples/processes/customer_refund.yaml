@@ -1,0 +1,147 @@
+# Example process: customer care refund request. The company, policy and data are fictional.
+id: customer_refund
+name: Customer care refund request
+description: A customer writes to customer care and asks for a refund of an order.
+owner: Head of Customer Care
+sla_minutes: 30
+cost_budget_usd: 0.02
+knowledge_base: ../knowledge
+handoff_manual_minutes: 9
+inputs: [customer_id, message]
+allowed_tools: [crm.get_order, finance.issue_refund, ticketing.create_ticket]
+
+approval_rules:
+  - tool: finance.issue_refund
+    when: args.amount > 100
+    approver_role: Team lead customer care
+    reason: Refunds above 100 USD need a second pair of eyes
+    review_minutes: 2
+
+steps:
+  - id: classify_intent
+    type: prompt
+    task: classify
+    name: Classify the request
+    role: Service agent
+    system: Ticketing
+    sla_minutes: 5
+    manual_minutes: 1.0
+    prompt: Classify the customer message into exactly one intent.
+    input: "{{ input.message }}"
+    labels:
+      refund_request: [refund, money back, reimburse, reimbursement]
+      delivery_status: [where, tracking, delivery, shipped, shipping]
+      complaint: [complaint, unhappy, disappointed, unacceptable]
+    min_confidence: 0.6
+    output: intent
+
+  - id: route_intent
+    type: decision
+    role: Service agent
+    branches:
+      - {when: "intent.label == 'refund_request'", goto: extract_details}
+    default: other_request
+
+  - id: extract_details
+    type: prompt
+    task: extract
+    name: Extract the order id
+    role: Service agent
+    system: Ticketing
+    manual_minutes: 1.0
+    prompt: Extract the order id from the customer message.
+    input: "{{ input.message }}"
+    fields: {order_id: "regex:ORD-\\d{4}"}
+    min_confidence: 1.0
+    output: details
+
+  - id: lookup_order
+    type: action
+    name: Look up the order
+    role: Service agent
+    system: CRM
+    manual_minutes: 1.5
+    tool: crm.get_order
+    args: {order_id: "{{ details.order_id }}"}
+    output: order
+
+  - id: check_policy
+    type: rag
+    name: Look up the refund policy
+    role: Service agent
+    system: Knowledge base
+    manual_minutes: 2.0
+    query: How many days after delivery can a customer request a refund?
+    min_confidence: 0.5
+    output: policy
+
+  - id: check_eligibility
+    type: decision
+    role: Service agent
+    branches:
+      - when: "order.found and order.status == 'delivered' and order.days_since_delivery <= 30"
+        goto: issue_refund
+    default: draft_rejection
+
+  - id: issue_refund
+    type: action
+    name: Issue the refund
+    role: Service agent
+    system: Finance
+    sla_minutes: 10
+    manual_minutes: 2.0
+    tool: finance.issue_refund
+    args: {order_id: "{{ order.order_id }}", amount: "{{ order.amount }}"}
+    output: refund
+
+  - id: draft_confirmation
+    type: prompt
+    task: generate
+    name: Draft the confirmation
+    role: Service agent
+    system: Ticketing
+    manual_minutes: 2.0
+    prompt: Write a short, polite confirmation to the customer.
+    input: >
+      Your refund {{ refund.refund_id }} of {{ refund.amount }} USD for order {{ order.order_id }} has been issued.
+      It is paid to the original payment method within five working days.
+    max_output_tokens: 80
+    output: reply
+    next: close_ticket
+
+  - id: draft_rejection
+    type: prompt
+    task: generate
+    name: Draft the rejection
+    role: Service agent
+    system: Ticketing
+    manual_minutes: 2.5
+    prompt: Write a short, polite message that explains why the refund is not possible.
+    input: >
+      We cannot refund order {{ details.order_id }}. Policy: {{ policy.answer }}
+    max_output_tokens: 80
+    output: reply
+    next: close_ticket
+
+  - id: close_ticket
+    type: action
+    name: Document and close the ticket
+    role: Service agent
+    system: Ticketing
+    manual_minutes: 0.5
+    tool: ticketing.create_ticket
+    args:
+      queue: customer-care
+      subject: "Refund request {{ details.order_id }}"
+      body: "{{ reply.text }}"
+      status: resolved
+    output: ticket
+    next: end
+
+  - id: other_request
+    type: human
+    name: Handle a request that is not a refund
+    role: Service agent
+    system: Ticketing
+    manual_minutes: 6.0
+    next: end

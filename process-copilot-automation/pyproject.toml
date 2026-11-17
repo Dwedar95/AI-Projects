@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "process-copilot-automation"
+version = "0.1.0"
+description = "Reference workflow engine that turns YAML business processes into agent-augmented workflows with routing, approvals, tracing and ROI analytics."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "M. Emad Dwedar", email = "mohamed.dwedar@tum.de" }]
+dependencies = ["numpy>=1.24", "pydantic>=2.0", "pyyaml>=6.0", "fastapi>=0.110"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4", "httpx>=0.27"]
+serve = ["uvicorn>=0.29"]
+
+[project.scripts]
+process-copilot = "process_copilot.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 125
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

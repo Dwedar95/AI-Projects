@@ -1,0 +1,131 @@
+# Example process: invoice exception handling in accounts payable. All data is fictional.
+id: invoice_exception
+name: Invoice exception handling
+description: Match an incoming invoice to its purchase order and prepare exceptions for the AP clerk.
+owner: Head of Accounting
+sla_minutes: 60
+cost_budget_usd: 0.02
+knowledge_base: ../knowledge
+handoff_manual_minutes: 12
+inputs: [invoice_id]
+allowed_tools: [finance.get_invoice, finance.get_purchase_order, finance.approve_payment, ticketing.create_ticket]
+
+approval_rules:
+  - tool: finance.approve_payment
+    when: args.amount > 5000
+    approver_role: Finance controller
+    reason: Payments above 5000 USD need controller approval
+    review_minutes: 3
+
+steps:
+  - id: get_invoice
+    type: action
+    name: Read the invoice
+    role: AP clerk
+    system: Finance
+    manual_minutes: 1.0
+    tool: finance.get_invoice
+    args: {invoice_id: "{{ input.invoice_id }}"}
+    output: invoice
+
+  - id: check_po_reference
+    type: decision
+    role: AP clerk
+    branches:
+      - {when: "invoice.found and invoice.po_id != ''", goto: get_po}
+    default: classify_exception
+
+  - id: get_po
+    type: action
+    name: Read the purchase order
+    role: AP clerk
+    system: Finance
+    manual_minutes: 1.0
+    tool: finance.get_purchase_order
+    args: {po_id: "{{ invoice.po_id }}"}
+    output: po
+
+  - id: match_amounts
+    type: decision
+    name: Match within tolerance
+    role: AP clerk
+    branches:
+      - {when: "po.found and abs(invoice.amount - po.amount) / po.amount <= 0.02", goto: approve_payment}
+    default: classify_exception
+
+  - id: approve_payment
+    type: action
+    name: Release for payment
+    role: AP clerk
+    system: Finance
+    sla_minutes: 15
+    manual_minutes: 1.5
+    tool: finance.approve_payment
+    args: {invoice_id: "{{ invoice.invoice_id }}", amount: "{{ invoice.amount }}"}
+    output: payment
+    next: end
+
+  - id: classify_exception
+    type: prompt
+    task: classify
+    name: Classify the exception
+    role: AP clerk
+    system: Finance
+    manual_minutes: 3.0
+    data_classification: confidential
+    prompt: Classify the invoice exception from the invoice note.
+    input: "{{ invoice.note }}"
+    labels:
+      price_variance: [price, contract price, higher]
+      quantity_mismatch: [quantity, goods receipt, exceeds]
+      missing_purchase_order: [no purchase order, reference]
+    min_confidence: 0.6
+    output: exception
+
+  - id: lookup_policy
+    type: rag
+    name: Look up the handling rule
+    role: AP clerk
+    system: Knowledge base
+    manual_minutes: 3.0
+    data_classification: confidential
+    query: "How is a {{ exception.label }} on a supplier invoice handled?"
+    min_confidence: 0.3
+    output: guidance
+
+  - id: summarise_case
+    type: prompt
+    task: summarise
+    name: Summarise the case for the clerk
+    role: AP clerk
+    system: Finance
+    manual_minutes: 4.0
+    data_classification: confidential
+    complexity: high
+    prompt: Summarise the exception and the next action for the accounts payable clerk.
+    input: >
+      Invoice {{ invoice.invoice_id }} from {{ invoice.supplier }} over {{ invoice.amount }} USD is blocked
+      as {{ exception.label }}. {{ invoice.note }} {{ guidance.answer }}
+    output: summary
+
+  - id: open_procurement_ticket
+    type: action
+    name: Open a ticket for procurement
+    role: AP clerk
+    system: Ticketing
+    manual_minutes: 1.5
+    tool: ticketing.create_ticket
+    args:
+      queue: procurement
+      subject: "Invoice exception {{ invoice.invoice_id }}: {{ exception.label }}"
+      body: "{{ summary.text }}"
+    output: ticket
+
+  - id: resolve_exception
+    type: human
+    name: Resolve the exception with supplier and procurement
+    role: AP clerk
+    system: Finance
+    sla_minutes: 45
+    manual_minutes: 8.0
+    next: end
