@@ -1,0 +1,103 @@
+# Target-state description of the reference design in this repository.
+# It is self-declared input: the engine scores what the file states and does
+# not inspect Azure. Network, identity, tagging and diagnostics items are
+# implemented by the Bicep in infra/. Items such as document-level security,
+# evaluation gates, budgets and feedback are application or organisational
+# controls described in the ADRs, not deployed by this repository.
+# Known gaps are declared as false: no load test, no index rebuild rehearsal,
+# no runbooks, no red team exercise, no second region, no customer-managed keys.
+name: agentic-rag-reference (prod)
+environment: prod
+
+network:
+  public_endpoints: false
+  private_endpoints: true
+  egress_control: true
+
+identity:
+  managed_identity: true
+  local_auth_disabled: true
+  end_user_auth: entra_id
+  document_level_security: true
+  least_privilege_rbac: true
+
+data:
+  classification: confidential
+  residency_requirement: eu
+  customer_managed_keys: false
+
+models:
+  - name: chat-small-ptu
+    deployment_scope: data_zone
+    content_filter: true
+    version_pinned: true
+  - name: chat-small
+    deployment_scope: data_zone
+    content_filter: true
+    version_pinned: true
+  - name: chat-large
+    deployment_scope: data_zone
+    content_filter: true
+    version_pinned: true
+  - name: embedding
+    deployment_scope: regional
+    content_filter: true
+    version_pinned: true
+
+agents:
+  enabled: true
+  tool_allowlist: true
+  write_tools: false
+  human_approval_for_writes: false
+  max_iterations: 6
+
+reliability:
+  availability_zones: 3
+  search_replicas: 3
+  model_fallback: true
+  retry_with_backoff: true
+  circuit_breaker: true
+  rto_hours: 8
+  rpo_hours: 24
+  index_rebuild_tested: false
+  multi_region: false
+
+cost:
+  token_limits_per_consumer: true
+  budget_alerts: true
+  tags: [workload, environment, costCenter, owner, dataClassification, managedBy]
+  token_showback: true
+  model_routing: true
+  uses_ptu: true
+  ptu_utilization_review: true
+
+operations:
+  infrastructure_as_code: true
+  ci_cd: true
+  diagnostic_settings: true
+  distributed_tracing: true
+  alerts: [error_rate, latency, throttling]
+  prompt_versioning: true
+  progressive_rollout: true
+  runbooks: false
+
+performance:
+  p95_latency_slo_ms: 6000
+  load_tested: false
+  autoscaling: true
+  hybrid_search: true
+  reranker: true
+  streaming: true
+  prompt_caching: true
+
+responsible_ai:
+  prompt_shields: true
+  indirect_injection_defence: true
+  citations: true
+  offline_evaluation: true
+  evaluation_gate_in_ci: true
+  pii_handling: true
+  user_feedback: true
+  human_escalation: true
+  red_teaming: false
+  transparency_notice: true

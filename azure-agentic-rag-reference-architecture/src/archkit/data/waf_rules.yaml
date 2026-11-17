@@ -1,0 +1,332 @@
+# Well-Architected style rules for an enterprise agentic RAG platform on Azure.
+# The rules are this repository's own distillation of common review questions.
+# They are not an official Microsoft checklist and do not replace a
+# Well-Architected Review.
+rules:
+  # ---------------------------------------------------------------- security
+  - id: SEC-01
+    pillar: security
+    severity: critical
+    title: PaaS data services expose no public endpoint
+    check:
+      all:
+        - {path: network.public_endpoints, op: eq, value: false}
+        - {path: network.private_endpoints, op: eq, value: true}
+    recommendation: Disable public network access and use private endpoints with private DNS (ADR 0002).
+  - id: SEC-02
+    pillar: security
+    severity: critical
+    title: Service-to-service calls use managed identity and local auth is disabled
+    check:
+      all:
+        - {path: identity.managed_identity, op: eq, value: true}
+        - {path: identity.local_auth_disabled, op: eq, value: true}
+    recommendation: Assign managed identities, grant data plane roles and disable key authentication (ADR 0003).
+  - id: SEC-03
+    pillar: security
+    severity: high
+    title: End users authenticate with Entra ID at the gateway
+    check: {path: identity.end_user_auth, op: in, value: [entra_id, entra_external_id]}
+    recommendation: Validate Entra ID tokens in API Management before any request reaches the orchestrator.
+  - id: SEC-04
+    pillar: security
+    severity: critical
+    title: Retrieval enforces document-level access control
+    applies_when: {path: data.classification, op: in, value: [confidential, restricted]}
+    check: {path: identity.document_level_security, op: eq, value: true}
+    recommendation: Store ACL group ids on each chunk and apply a security filter built from the caller's token.
+  - id: SEC-05
+    pillar: security
+    severity: high
+    title: Role assignments follow least privilege
+    check: {path: identity.least_privilege_rbac, op: eq, value: true}
+    recommendation: Use data plane roles such as Search Index Data Reader, never Contributor, for workloads.
+  - id: SEC-06
+    pillar: security
+    severity: high
+    title: Model region and deployment type satisfy the data residency requirement
+    applies_when: {path: data.residency_requirement, exists: true}
+    check:
+      path: models
+      every: {path: deployment_scope, op: in, value: [regional, data_zone]}
+    recommendation: Use regional or data zone deployments, not global deployments, when residency applies (ADR 0005).
+  - id: SEC-07
+    pillar: security
+    severity: medium
+    title: Outbound traffic from the workload is controlled
+    check: {path: network.egress_control, op: eq, value: true}
+    recommendation: Route egress through a firewall or restrict it with NSG rules and service tags.
+  - id: SEC-08
+    pillar: security
+    severity: medium
+    title: Customer-managed keys are used for restricted data
+    applies_when: {path: data.classification, op: eq, value: restricted}
+    check: {path: data.customer_managed_keys, op: eq, value: true}
+    recommendation: Enable customer-managed keys on storage, search and the AI account.
+  - id: SEC-09
+    pillar: security
+    severity: high
+    title: Agent tools are allowlisted and write actions need approval
+    applies_when: {path: agents.enabled, op: eq, value: true}
+    check:
+      all:
+        - {path: agents.tool_allowlist, op: eq, value: true}
+        - any:
+            - {path: agents.write_tools, op: eq, value: false}
+            - {path: agents.human_approval_for_writes, op: eq, value: true}
+    recommendation: Register tools explicitly and require human approval for state-changing tool calls.
+
+  # ------------------------------------------------------------- reliability
+  - id: REL-01
+    pillar: reliability
+    severity: high
+    title: Compute is spread across availability zones
+    applies_when: {path: environment, op: eq, value: prod}
+    check: {path: reliability.availability_zones, op: gte, value: 2}
+    recommendation: Enable zone redundancy on the Container Apps environment and use zone-redundant storage.
+  - id: REL-02
+    pillar: reliability
+    severity: high
+    title: AI Search has enough replicas for its availability SLA
+    applies_when: {path: environment, op: eq, value: prod}
+    check: {path: reliability.search_replicas, op: gte, value: 2}
+    recommendation: Use two replicas for read availability and three for read and write availability.
+  - id: REL-03
+    pillar: reliability
+    severity: high
+    title: Model calls have a fallback deployment
+    check: {path: reliability.model_fallback, op: eq, value: true}
+    recommendation: Spill over from provisioned to standard deployments or to a second region on 429 and 5xx.
+  - id: REL-04
+    pillar: reliability
+    severity: medium
+    title: Retries use backoff and a circuit breaker protects the backend
+    check:
+      all:
+        - {path: reliability.retry_with_backoff, op: eq, value: true}
+        - {path: reliability.circuit_breaker, op: eq, value: true}
+    recommendation: Honour Retry-After, cap retries and configure a circuit breaker on the gateway backend.
+  - id: REL-05
+    pillar: reliability
+    severity: medium
+    title: Recovery objectives are defined
+    check:
+      all:
+        - {path: reliability.rto_hours, exists: true}
+        - {path: reliability.rpo_hours, exists: true}
+    recommendation: Agree RTO and RPO with the business and record them in the architecture description.
+  - id: REL-06
+    pillar: reliability
+    severity: medium
+    title: The index can be rebuilt from source and the rebuild has been tested
+    check: {path: reliability.index_rebuild_tested, op: eq, value: true}
+    recommendation: Keep source documents and the indexing pipeline in code and rehearse a full rebuild.
+  - id: REL-07
+    pillar: reliability
+    severity: low
+    title: A second region is available for disaster recovery
+    applies_when: {path: reliability.rto_hours, op: lte, value: 4}
+    check: {path: reliability.multi_region, op: eq, value: true}
+    recommendation: An RTO of four hours or less usually needs a warm standby region.
+
+  # -------------------------------------------------------------------- cost
+  - id: COST-01
+    pillar: cost
+    severity: high
+    title: Token consumption is limited per consumer
+    check: {path: cost.token_limits_per_consumer, op: eq, value: true}
+    recommendation: Apply a tokens-per-minute limit per API Management subscription (ADR 0006).
+  - id: COST-02
+    pillar: cost
+    severity: high
+    title: Budgets and alerts exist
+    check: {path: cost.budget_alerts, op: eq, value: true}
+    recommendation: Create a budget per environment with alerts at 50, 80 and 100 percent.
+  - id: COST-03
+    pillar: cost
+    severity: medium
+    title: Resources carry cost allocation tags
+    check: {path: cost.tags, op: contains_all, value: [costCenter, owner, environment]}
+    recommendation: Tag every resource with costCenter, owner and environment and enforce it with policy.
+  - id: COST-04
+    pillar: cost
+    severity: medium
+    title: Token usage is attributed to consumers for showback
+    check: {path: cost.token_showback, op: eq, value: true}
+    recommendation: Emit token metrics with consumer dimensions at the gateway.
+  - id: COST-05
+    pillar: cost
+    severity: medium
+    title: Requests are routed to the cheapest adequate model
+    check: {path: cost.model_routing, op: eq, value: true}
+    recommendation: Default to the small model and escalate by rule or classifier (ADR 0004).
+  - id: COST-06
+    pillar: cost
+    severity: medium
+    title: Provisioned throughput is sized from measured demand and reviewed
+    applies_when: {path: cost.uses_ptu, op: eq, value: true}
+    check: {path: cost.ptu_utilization_review, op: eq, value: true}
+    recommendation: Review PTU utilization monthly and compare it with the break-even from `archkit estimate`.
+  - id: COST-07
+    pillar: cost
+    severity: low
+    title: Log ingestion is capped or sampled outside production
+    applies_when: {path: environment, op: ne, value: prod}
+    check: {path: cost.log_cap, op: eq, value: true}
+    recommendation: Set a daily cap on the Log Analytics workspace in non-production environments.
+
+  # -------------------------------------------------------------- operations
+  - id: OPS-01
+    pillar: operations
+    severity: high
+    title: Infrastructure is defined as code and deployed by a pipeline
+    check:
+      all:
+        - {path: operations.infrastructure_as_code, op: eq, value: true}
+        - {path: operations.ci_cd, op: eq, value: true}
+    recommendation: Deploy only through the pipeline with what-if review and environment approvals.
+  - id: OPS-02
+    pillar: operations
+    severity: high
+    title: Diagnostic logs from every service reach a central workspace
+    check: {path: operations.diagnostic_settings, op: eq, value: true}
+    recommendation: Add diagnostic settings to every resource and enforce it with policy.
+  - id: OPS-03
+    pillar: operations
+    severity: medium
+    title: Requests are traced end to end
+    check: {path: operations.distributed_tracing, op: eq, value: true}
+    recommendation: Propagate trace context from the gateway through the orchestrator to model and search calls.
+  - id: OPS-04
+    pillar: operations
+    severity: medium
+    title: Alerts cover errors, latency and throttling
+    check: {path: operations.alerts, op: contains_all, value: [error_rate, latency, throttling]}
+    recommendation: Alert on 5xx rate, p95 latency and 429 rate with an on-call route.
+  - id: OPS-05
+    pillar: operations
+    severity: medium
+    title: Prompts and model versions are versioned and pinned
+    check:
+      all:
+        - {path: operations.prompt_versioning, op: eq, value: true}
+        - {path: models, every: {path: version_pinned, op: eq, value: true}}
+    recommendation: Keep prompts in source control and disable automatic model upgrades.
+  - id: OPS-06
+    pillar: operations
+    severity: medium
+    title: Releases are rolled out progressively
+    check: {path: operations.progressive_rollout, op: eq, value: true}
+    recommendation: Use Container Apps revisions with traffic splitting and an automated rollback signal.
+  - id: OPS-07
+    pillar: operations
+    severity: low
+    title: Runbooks exist for the main failure modes
+    check: {path: operations.runbooks, op: eq, value: true}
+    recommendation: Write runbooks for throttling, index corruption, region failure and content safety incidents.
+
+  # ------------------------------------------------------------- performance
+  - id: PERF-01
+    pillar: performance
+    severity: high
+    title: A latency objective is defined and load tested
+    check:
+      all:
+        - {path: performance.p95_latency_slo_ms, exists: true}
+        - {path: performance.load_tested, op: eq, value: true}
+    recommendation: Define a p95 objective per endpoint and run a load test at peak plus headroom.
+  - id: PERF-02
+    pillar: performance
+    severity: medium
+    title: The orchestrator scales automatically
+    check: {path: performance.autoscaling, op: eq, value: true}
+    recommendation: Scale on concurrent requests and keep a minimum replica count in production.
+  - id: PERF-03
+    pillar: performance
+    severity: medium
+    title: Retrieval uses hybrid search with reranking
+    check:
+      all:
+        - {path: performance.hybrid_search, op: eq, value: true}
+        - {path: performance.reranker, op: eq, value: true}
+    recommendation: Combine keyword and vector queries with reciprocal rank fusion and a semantic reranker.
+  - id: PERF-04
+    pillar: performance
+    severity: medium
+    title: Responses are streamed to the client
+    check: {path: performance.streaming, op: eq, value: true}
+    recommendation: Stream tokens to reduce perceived latency and disable gateway response buffering.
+  - id: PERF-05
+    pillar: performance
+    severity: low
+    title: Stable prompt prefixes are cached
+    check: {path: performance.prompt_caching, op: eq, value: true}
+    recommendation: Keep system prompt and tool definitions at the start of the prompt so they can be cached.
+  - id: PERF-06
+    pillar: performance
+    severity: medium
+    title: Agent loops are bounded
+    applies_when: {path: agents.enabled, op: eq, value: true}
+    check: {path: agents.max_iterations, op: lte, value: 10}
+    recommendation: Cap the number of tool iterations and the token budget per request.
+
+  # ---------------------------------------------------------- responsible AI
+  - id: RAI-01
+    pillar: responsible_ai
+    severity: critical
+    title: Content filters are applied to every model deployment
+    check:
+      path: models
+      every: {path: content_filter, op: eq, value: true}
+    recommendation: Attach a content filter policy to every deployment and do not disable it per request.
+  - id: RAI-02
+    pillar: responsible_ai
+    severity: high
+    title: Prompt injection defences are in place for user input and retrieved documents
+    check:
+      all:
+        - {path: responsible_ai.prompt_shields, op: eq, value: true}
+        - {path: responsible_ai.indirect_injection_defence, op: eq, value: true}
+    recommendation: Screen user prompts and retrieved content, and separate instructions from data in prompts.
+  - id: RAI-03
+    pillar: responsible_ai
+    severity: high
+    title: Answers cite their sources
+    check: {path: responsible_ai.citations, op: eq, value: true}
+    recommendation: Return source ids with every answer and refuse when no supporting passage is found.
+  - id: RAI-04
+    pillar: responsible_ai
+    severity: high
+    title: Groundedness and retrieval quality are evaluated before release
+    check:
+      all:
+        - {path: responsible_ai.offline_evaluation, op: eq, value: true}
+        - {path: responsible_ai.evaluation_gate_in_ci, op: eq, value: true}
+    recommendation: Maintain a labelled evaluation set and block releases that regress below a threshold.
+  - id: RAI-05
+    pillar: responsible_ai
+    severity: medium
+    title: Personal data is detected and handled before logging
+    check: {path: responsible_ai.pii_handling, op: eq, value: true}
+    recommendation: Redact personal data from prompts and completions before they are written to logs.
+  - id: RAI-06
+    pillar: responsible_ai
+    severity: medium
+    title: Users can give feedback and escalate to a human
+    check:
+      all:
+        - {path: responsible_ai.user_feedback, op: eq, value: true}
+        - {path: responsible_ai.human_escalation, op: eq, value: true}
+    recommendation: Capture thumbs up or down with the trace id and offer a route to a human owner.
+  - id: RAI-07
+    pillar: responsible_ai
+    severity: medium
+    title: The system has been red teamed
+    check: {path: responsible_ai.red_teaming, op: eq, value: true}
+    recommendation: Run adversarial tests for jailbreaks, data exfiltration and harmful content before go-live.
+  - id: RAI-08
+    pillar: responsible_ai
+    severity: low
+    title: Users are told they interact with an AI system and what its limits are
+    check: {path: responsible_ai.transparency_notice, op: eq, value: true}
+    recommendation: Show an AI disclosure and publish intended use and known limitations.

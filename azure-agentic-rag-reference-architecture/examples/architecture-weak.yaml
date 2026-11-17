@@ -1,0 +1,57 @@
+# A deliberately weak proof-of-concept architecture, used to show what the
+# checklist engine reports. Undocumented sections are left out on purpose.
+name: chatbot-poc
+environment: dev
+
+network:
+  public_endpoints: true
+  private_endpoints: false
+
+identity:
+  managed_identity: false
+  local_auth_disabled: false
+  end_user_auth: api_key
+
+data:
+  classification: confidential
+  residency_requirement: eu
+
+models:
+  - name: chat
+    deployment_scope: global
+    content_filter: true
+    version_pinned: false
+
+agents:
+  enabled: true
+  tool_allowlist: false
+  write_tools: true
+  human_approval_for_writes: false
+  max_iterations: 50
+
+reliability:
+  model_fallback: false
+  retry_with_backoff: true
+  circuit_breaker: false
+
+cost:
+  token_limits_per_consumer: false
+  budget_alerts: false
+  tags: [environment]
+  model_routing: false
+  log_cap: false
+
+operations:
+  infrastructure_as_code: false
+  ci_cd: false
+  diagnostic_settings: false
+
+performance:
+  autoscaling: true
+  hybrid_search: false
+  reranker: false
+  streaming: true
+
+responsible_ai:
+  citations: false
+  offline_evaluation: false

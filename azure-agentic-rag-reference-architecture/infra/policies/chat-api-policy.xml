@@ -1,0 +1,42 @@
+<!--
+  Gateway policy for the Agentic RAG API.
+  1. Validate the caller's Entra ID token (audience and tenant).
+  2. Enforce a token-per-minute budget per API Management subscription.
+  3. Emit token metrics with cost allocation dimensions.
+  4. Forward to the orchestrator backend, which has a circuit breaker.
+  The orchestrator, not the gateway, calls Azure OpenAI with its managed identity.
+-->
+<policies>
+  <inbound>
+    <base />
+    <validate-azure-ad-token tenant-id="{{entra-tenant-id}}" header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
+      <audiences>
+        <audience>{{api-audience}}</audience>
+      </audiences>
+    </validate-azure-ad-token>
+    <set-header name="x-caller-object-id" exists-action="override">
+      <value>@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Claims.GetValueOrDefault("oid", "unknown"))</value>
+    </set-header>
+    <llm-token-limit counter-key="@(context.Subscription.Id)" tokens-per-minute="{{tokens-per-minute}}" estimate-prompt-tokens="true" remaining-tokens-header-name="x-ratelimit-remaining-tokens" />
+    <llm-emit-token-metric namespace="agentic-rag">
+      <dimension name="Subscription ID" />
+      <dimension name="API ID" />
+      <dimension name="Cost center" value="@(context.Subscription.Name)" />
+    </llm-emit-token-metric>
+    <set-backend-service backend-id="orchestrator" />
+  </inbound>
+  <backend>
+    <retry condition="@(context.Response.StatusCode == 429 || context.Response.StatusCode >= 500)" count="2" interval="1" first-fast-retry="true">
+      <forward-request buffer-request-body="true" timeout="120" />
+    </retry>
+  </backend>
+  <outbound>
+    <base />
+    <set-header name="x-request-id" exists-action="override">
+      <value>@(context.RequestId.ToString())</value>
+    </set-header>
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>

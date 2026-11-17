@@ -1,0 +1,46 @@
+# Example workload for `archkit estimate`. All figures are assumptions for the
+# demo, not measurements from a real system.
+workload:
+  name: internal-knowledge-assistant
+  requests_per_day: 400000
+  days_per_month: 30
+  burst_factor: 1.5
+  embedding_model: embedding
+  embedding_tokens_per_request: 40
+  routes:
+    # Most requests: small model plans, calls retrieval, answers.
+    - model: chat-small
+      share: 0.85
+      llm_calls_per_request: 3
+      prompt_tokens_per_call: 2500
+      completion_tokens_per_call: 250
+      cached_prompt_fraction: 0.4
+    # Escalations: large model for multi-step reasoning.
+    - model: chat-large
+      share: 0.15
+      llm_calls_per_request: 4
+      prompt_tokens_per_call: 4000
+      completion_tokens_per_call: 500
+      cached_prompt_fraction: 0.3
+
+search:
+  documents: 2000000
+  chunks_per_document: 12
+  avg_chunk_chars: 2000
+  avg_chunk_tokens: 500
+  vector_dimensions: 1536
+  quantization: scalar
+  keep_original_vectors: true
+  growth_factor: 1.5
+  peak_queries_per_second: 25
+  availability: read_write
+  full_reindex_per_year: 2
+
+platform:
+  components:
+    api_management_unit: 2
+    container_apps_replica: 4
+    private_endpoint: 4
+    key_vault: 1
+
+ptu_commitment: monthly

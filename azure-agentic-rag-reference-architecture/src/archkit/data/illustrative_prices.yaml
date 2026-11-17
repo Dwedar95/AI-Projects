@@ -1,0 +1,85 @@
+# ILLUSTRATIVE UNIT PRICES AND CAPACITY FIGURES. PLACEHOLDERS ONLY.
+#
+# These numbers are NOT current Azure prices, quotas or throughput figures.
+# They are round values chosen so that the estimator produces results of a
+# plausible order of magnitude and so that the arithmetic is easy to check by
+# hand. Before using any output for a decision, replace every value with the
+# figures from the Azure pricing page, the Azure OpenAI PTU calculator and the
+# AI Search service limits documentation for your region, currency and agreement.
+
+disclaimer: >-
+  Illustrative placeholder prices and capacities, not current Azure prices.
+  Replace them with your own negotiated and regional figures.
+currency: USD
+hours_per_month: 730
+
+# Model classes are generic on purpose. Map them to your approved deployments.
+models:
+  chat-small:
+    input_per_1m: 0.20          # per 1M uncached input tokens
+    cached_input_per_1m: 0.10   # per 1M cached input tokens
+    output_per_1m: 0.80         # per 1M output tokens
+    ptu:
+      input_tpm_per_ptu: 60000    # input-equivalent tokens per minute per PTU
+      output_token_weight: 4.0    # one output token counts as this many input tokens
+      min_ptus: 15
+      increment: 5
+      hourly_per_ptu: 1.00        # no commitment
+      monthly_reservation_per_ptu: 260.00
+  chat-large:
+    input_per_1m: 3.00
+    cached_input_per_1m: 1.50
+    output_per_1m: 12.00
+    ptu:
+      input_tpm_per_ptu: 4000
+      output_token_weight: 4.0
+      min_ptus: 15
+      increment: 5
+      hourly_per_ptu: 1.00
+      monthly_reservation_per_ptu: 260.00
+  embedding:
+    input_per_1m: 0.10
+
+# One search unit (SU) = one replica x one partition.
+search:
+  allowed_partition_counts: [1, 2, 3, 4, 6, 12]
+  max_search_units: 36
+  tiers:
+    basic:
+      storage_gb_per_partition: 15
+      vector_gb_per_partition: 5
+      max_partitions: 3
+      max_replicas: 3
+      monthly_per_search_unit: 75.00
+      qps_per_replica: 5
+    standard:
+      storage_gb_per_partition: 160
+      vector_gb_per_partition: 35
+      max_partitions: 12
+      max_replicas: 12
+      monthly_per_search_unit: 250.00
+      qps_per_replica: 15
+    standard2:
+      storage_gb_per_partition: 350
+      vector_gb_per_partition: 150
+      max_partitions: 12
+      max_replicas: 12
+      monthly_per_search_unit: 1000.00
+      qps_per_replica: 60
+    standard3:
+      storage_gb_per_partition: 700
+      vector_gb_per_partition: 300
+      max_partitions: 12
+      max_replicas: 12
+      monthly_per_search_unit: 2000.00
+      qps_per_replica: 120
+
+# Fixed platform components, per month.
+platform:
+  fixed_monthly:
+    api_management_unit: 700.00
+    container_apps_replica: 60.00
+    private_endpoint: 8.00
+    key_vault: 5.00
+  log_ingestion_per_gb: 2.50
+  log_gb_per_million_requests: 4.0
