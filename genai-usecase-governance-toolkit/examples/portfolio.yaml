@@ -1,0 +1,168 @@
+# FICTIONAL EXAMPLE DATA. The company, the use cases, all scores and all money
+# values in this file are invented for demonstration. They do not describe any
+# real organisation or engagement.
+name: Musterwerk AG GenAI portfolio
+fictional: true
+currency: EUR
+
+scoring:
+  scale_min: 1
+  scale_max: 5
+  dimension_weights: {value: 0.45, feasibility: 0.35, risk: 0.20}
+  criteria:
+    - {name: financial_impact, dimension: value, weight: 3, description: Cost saving or revenue effect}
+    - {name: strategic_fit, dimension: value, weight: 2, description: Fit with the business strategy}
+    - {name: user_reach, dimension: value, weight: 1, description: Number of users or cases affected}
+    - {name: data_readiness, dimension: feasibility, weight: 3, description: Availability and quality of data}
+    - {name: technical_simplicity, dimension: feasibility, weight: 2, description: 5 means simple to build}
+    - {name: org_readiness, dimension: feasibility, weight: 2, description: Sponsor, skills and process maturity}
+    - {name: regulatory_risk, dimension: risk, weight: 3, description: 5 means high regulatory exposure}
+    - {name: data_privacy_risk, dimension: risk, weight: 2, description: 5 means sensitive personal data}
+    - {name: reputational_risk, dimension: risk, weight: 2, description: 5 means high external visibility}
+
+use_cases:
+  - id: UC-01
+    name: Customer service reply copilot
+    description: >
+      A copilot that drafts replies to customer service tickets from the knowledge base.
+      Agents review and send the reply.
+    business_unit: Customer Service
+    owner: Head of Customer Service
+    scores: {financial_impact: 4, strategic_fit: 4, user_reach: 4, data_readiness: 4, technical_simplicity: 4,
+             org_readiness: 4, regulatory_risk: 2, data_privacy_risk: 3, reputational_risk: 3}
+    build_buy: {strategic_differentiation: 2, internal_capability: 3, market_solution_maturity: 5,
+                data_sensitivity: 3, time_pressure: 4, customisation_need: 2}
+    economics:
+      horizon_years: 3
+      discount_rate: 0.08
+      build_cost: 180000
+      change_management_cost: 60000
+      run_cost_per_year: 70000
+      requests_per_year: 400000
+      input_tokens_per_request: 3000
+      output_tokens_per_request: 400
+      price_per_1k_input_tokens: 0.003
+      price_per_1k_output_tokens: 0.012
+      annual_benefit_at_full_adoption: 420000
+      adoption_curve: [0.4, 0.75, 0.9]
+      uncertainty:
+        benefit: {low: 0.6, high: 1.2}
+        build_cost: {low: 0.9, high: 1.5}
+        run_cost: {low: 0.9, high: 1.3}
+        volume: {low: 0.7, high: 1.6}
+        adoption: {low: 0.6, high: 1.1}
+
+  - id: UC-02
+    name: Supplier contract clause extraction
+    description: >
+      Extracts payment terms, liability caps and renewal dates from supplier contracts
+      into a structured table for the legal team to check.
+    business_unit: Procurement
+    owner: Head of Procurement
+    scores: {financial_impact: 3, strategic_fit: 3, user_reach: 2, data_readiness: 3, technical_simplicity: 3,
+             org_readiness: 3, regulatory_risk: 1, data_privacy_risk: 2, reputational_risk: 1}
+    build_buy: {strategic_differentiation: 2, internal_capability: 2, market_solution_maturity: 4,
+                data_sensitivity: 4, time_pressure: 2, customisation_need: 3}
+
+  - id: UC-03
+    name: CV screening and candidate ranking
+    description: >
+      Ranks applicants for open positions by screening CVs against the job profile,
+      so recruiters see a shortlist first.
+    business_unit: Human Resources
+    owner: Head of Talent Acquisition
+    scores: {financial_impact: 3, strategic_fit: 3, user_reach: 3, data_readiness: 3, technical_simplicity: 3,
+             org_readiness: 2, regulatory_risk: 5, data_privacy_risk: 5, reputational_risk: 4}
+    build_buy: {strategic_differentiation: 1, internal_capability: 2, market_solution_maturity: 4,
+                data_sensitivity: 5, time_pressure: 2, customisation_need: 2}
+    triage: {decisions_about_persons: true, used_in_workplace: false}
+
+  - id: UC-04
+    name: Maintenance knowledge assistant
+    description: >
+      Service technicians ask questions in natural language and get answers with
+      citations from machine manuals and past service reports.
+    business_unit: Field Service
+    owner: Head of Field Service
+    scores: {financial_impact: 5, strategic_fit: 5, user_reach: 3, data_readiness: 2, technical_simplicity: 2,
+             org_readiness: 3, regulatory_risk: 1, data_privacy_risk: 1, reputational_risk: 2}
+    build_buy: {strategic_differentiation: 5, internal_capability: 4, market_solution_maturity: 2,
+                data_sensitivity: 4, time_pressure: 2, customisation_need: 5}
+    triage: {interacts_with_people: true, generates_synthetic_content: true}
+    economics:
+      horizon_years: 4
+      discount_rate: 0.08
+      build_cost: 520000
+      change_management_cost: 90000
+      run_cost_per_year: 140000
+      requests_per_year: 150000
+      input_tokens_per_request: 6000
+      output_tokens_per_request: 600
+      price_per_1k_input_tokens: 0.003
+      price_per_1k_output_tokens: 0.012
+      annual_benefit_at_full_adoption: 600000
+      adoption_curve: [0.25, 0.6, 0.85, 0.95]
+      uncertainty:
+        benefit: {low: 0.5, high: 1.3}
+        build_cost: {low: 0.9, high: 1.8}
+        adoption: {low: 0.5, high: 1.05}
+
+  - id: UC-05
+    name: Invoice matching assistant
+    description: >
+      Matches incoming invoices to purchase orders and goods receipts and proposes
+      a booking for the accounts payable clerk.
+    business_unit: Finance
+    owner: Head of Accounting
+    scores: {financial_impact: 3, strategic_fit: 2, user_reach: 2, data_readiness: 5, technical_simplicity: 4,
+             org_readiness: 4, regulatory_risk: 1, data_privacy_risk: 2, reputational_risk: 1}
+    build_buy: {strategic_differentiation: 1, internal_capability: 3, market_solution_maturity: 5,
+                data_sensitivity: 3, time_pressure: 3, customisation_need: 2}
+
+  - id: UC-06
+    name: Call centre agent emotion monitoring
+    description: >
+      Infers the emotions of employees in the call centre from voice during calls
+      and reports stress scores per agent to team leads.
+    business_unit: Customer Service
+    owner: Head of Customer Service
+    scores: {financial_impact: 2, strategic_fit: 1, user_reach: 2, data_readiness: 3, technical_simplicity: 3,
+             org_readiness: 2, regulatory_risk: 5, data_privacy_risk: 5, reputational_risk: 5}
+    triage: {emotion_recognition_work_education: true}
+
+  - id: UC-07
+    name: Marketing content generation
+    description: >
+      Generates first drafts of product descriptions and campaign texts in four
+      languages for review by the marketing team.
+    business_unit: Marketing
+    owner: Head of Marketing
+    scores: {financial_impact: 2, strategic_fit: 3, user_reach: 2, data_readiness: 4, technical_simplicity: 5,
+             org_readiness: 4, regulatory_risk: 2, data_privacy_risk: 1, reputational_risk: 3}
+    build_buy: {strategic_differentiation: 2, internal_capability: 3, market_solution_maturity: 5,
+                data_sensitivity: 1, time_pressure: 3, customisation_need: 2}
+
+  - id: UC-08
+    name: HR policy question answering
+    description: >
+      A chatbot that answers employee questions on leave, travel and benefits
+      policies with links to the source policy.
+    business_unit: Human Resources
+    owner: Head of HR Services
+    depends_on: [UC-01]
+    scores: {financial_impact: 2, strategic_fit: 3, user_reach: 5, data_readiness: 4, technical_simplicity: 4,
+             org_readiness: 3, regulatory_risk: 2, data_privacy_risk: 3, reputational_risk: 2}
+    build_buy: {strategic_differentiation: 1, internal_capability: 3, market_solution_maturity: 4,
+                data_sensitivity: 3, time_pressure: 2, customisation_need: 3}
+
+  - id: UC-09
+    name: Interview scheduling assistant
+    description: >
+      Proposes interview slots to invited candidates based on calendar availability.
+      It does not evaluate or rank candidates.
+    business_unit: Human Resources
+    owner: Head of Talent Acquisition
+    scores: {financial_impact: 1, strategic_fit: 2, user_reach: 2, data_readiness: 4, technical_simplicity: 4,
+             org_readiness: 4, regulatory_risk: 2, data_privacy_risk: 2, reputational_risk: 1}
+    triage: {employment: true, narrow_procedural_task: true, profiling_of_persons: false,
+             interacts_with_people: true}
