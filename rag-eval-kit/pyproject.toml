@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-eval-kit"
+version = "0.1.0"
+description = "A deployable RAG service with hybrid retrieval, cited answers and an evaluation framework with a release gate."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "M. Emad Dwedar", email = "mohamed.dwedar@tum.de" }]
+dependencies = [
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "pydantic>=2.5",
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "httpx>=0.26", "ruff>=0.4"]
+
+[project.scripts]
+rag-eval-kit = "rag_eval_kit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+rag_eval_kit = ["data/*.yaml", "data/*.json", "data/*.jsonl", "data/corpus/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Header"]

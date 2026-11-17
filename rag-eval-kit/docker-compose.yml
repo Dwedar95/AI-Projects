@@ -1,0 +1,40 @@
+# Local deployment of the RAG service.
+# Create a .env file first (see .env.example). There is no default API key.
+services:
+  rag:
+    build: .
+    image: rag-eval-kit:0.1.0
+    ports:
+      - "8000:8000"
+    environment:
+      RAG_API_KEYS: ${RAG_API_KEYS:?set RAG_API_KEYS in .env, format name:role:secret}
+      RAG_AUDIT_LOG: /data/audit/audit.jsonl
+      # Optional Azure OpenAI adapter settings (untested adapter, see README).
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT:-}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY:-}
+      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${AZURE_OPENAI_EMBEDDING_DEPLOYMENT:-}
+      AZURE_OPENAI_CHAT_DEPLOYMENT: ${AZURE_OPENAI_CHAT_DEPLOYMENT:-}
+    volumes:
+      - audit:/data/audit
+      # Mount your own documents and start with: command: [..., "--corpus", "/corpus"]
+      # - ./my-corpus:/corpus:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  # One-shot evaluation with the release gate: docker compose run --rm eval
+  eval:
+    build: .
+    image: rag-eval-kit:0.1.0
+    profiles: ["eval"]
+    command: ["rag-eval-kit", "eval", "--out", "/reports"]
+    volumes:
+      - ./reports:/reports
+
+volumes:
+  audit:

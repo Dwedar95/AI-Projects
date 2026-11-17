@@ -1,0 +1,58 @@
+{"id": "q001", "kind": "keyword", "question": "How many days of annual leave do full-time employees receive?", "relevant_docs": ["hr-annual-leave"], "answer_keywords": ["30 days"], "answerable": true}
+{"id": "q002", "kind": "keyword", "question": "When is a medical certificate required during sick leave?", "relevant_docs": ["hr-sick-leave"], "answer_keywords": ["fourth calendar day"], "answerable": true}
+{"id": "q003", "kind": "keyword", "question": "What is the hotel limit per night on business trips?", "relevant_docs": ["hr-travel-expenses"], "answer_keywords": ["150 euros"], "answerable": true}
+{"id": "q004", "kind": "keyword", "question": "What is the minimum password length?", "relevant_docs": ["it-password-policy"], "answer_keywords": ["14 characters"], "answerable": true}
+{"id": "q005", "kind": "keyword", "question": "What does error code E-214 mean on the MW-200?", "relevant_docs": ["product-error-codes"], "answer_keywords": ["DHCP"], "answerable": true}
+{"id": "q006", "kind": "keyword", "question": "What does E-402 mean?", "relevant_docs": ["product-error-codes"], "answer_keywords": ["signature check"], "answerable": true}
+{"id": "q007", "kind": "keyword", "question": "How long is the warranty for the MW-200?", "relevant_docs": ["product-warranty"], "answer_keywords": ["36 month"], "answerable": true}
+{"id": "q008", "kind": "keyword", "question": "Which protocols does the MW-200 gateway support?", "relevant_docs": ["product-specifications"], "answer_keywords": ["Modbus", "OPC UA", "MQTT"], "answerable": true}
+{"id": "q009", "kind": "keyword", "question": "How long are daily backups kept?", "relevant_docs": ["it-backup-policy"], "answer_keywords": ["35 days"], "answerable": true}
+{"id": "q010", "kind": "keyword", "question": "What is the recovery time objective for critical systems?", "relevant_docs": ["it-backup-policy"], "answer_keywords": ["4 hours"], "answerable": true}
+{"id": "q011", "kind": "keyword", "question": "How long are invoices and accounting records retained?", "relevant_docs": ["it-data-retention"], "answer_keywords": ["10 years"], "answerable": true}
+{"id": "q012", "kind": "keyword", "question": "What is the restocking fee for opened packaging?", "relevant_docs": ["support-refund-policy"], "answer_keywords": ["15 percent"], "answerable": true}
+{"id": "q013", "kind": "keyword", "question": "What is the payment term on invoices?", "relevant_docs": ["support-billing"], "answer_keywords": ["30 days net"], "answerable": true}
+{"id": "q014", "kind": "keyword", "question": "How often are privileged accounts reviewed?", "relevant_docs": ["it-access-reviews"], "answer_keywords": ["quarter"], "answerable": true}
+{"id": "q015", "kind": "keyword", "question": "How long is the probation period?", "relevant_docs": ["hr-onboarding"], "answer_keywords": ["6 months"], "answerable": true}
+{"id": "q016", "kind": "keyword", "question": "What is the personal learning budget per year?", "relevant_docs": ["hr-training-budget"], "answer_keywords": ["1500 euros"], "answerable": true}
+{"id": "q017", "kind": "keyword", "question": "Which second factors are allowed for multi-factor authentication?", "relevant_docs": ["it-multi-factor-authentication"], "answer_keywords": ["authenticator app", "FIDO2"], "answerable": true}
+{"id": "q018", "kind": "keyword", "question": "After how many failed sign-in attempts is an account locked?", "relevant_docs": ["it-password-policy"], "answer_keywords": ["8 failed"], "answerable": true}
+{"id": "q019", "kind": "keyword", "question": "How many days per week can employees work remotely?", "relevant_docs": ["hr-remote-work"], "answer_keywords": ["3 days"], "answerable": true}
+{"id": "q020", "kind": "keyword", "question": "Which supply voltage does the MW-200 need?", "relevant_docs": ["product-installation"], "answer_keywords": ["24 V"], "answerable": true}
+{"id": "q021", "kind": "keyword", "question": "How long does a firmware update of the MW-200 take?", "relevant_docs": ["product-firmware-update"], "answer_keywords": ["6 minutes"], "answerable": true}
+{"id": "q022", "kind": "keyword", "question": "Which battery buffers the real-time clock of the gateway?", "relevant_docs": ["product-maintenance"], "answer_keywords": ["CR2032"], "answerable": true}
+{"id": "q023", "kind": "keyword", "question": "What is the first response time for a priority 1 case on the Premium plan?", "relevant_docs": ["support-service-levels"], "answer_keywords": ["1 hour"], "answerable": true}
+{"id": "q024", "kind": "keyword", "question": "From which amount does a purchase need a purchase order?", "relevant_docs": ["finance-procurement"], "answer_keywords": ["1000 euros"], "answerable": true}
+{"id": "q025", "kind": "paraphrase", "question": "How much vacation can I move into next year?", "relevant_docs": ["hr-annual-leave"], "answer_keywords": ["10 unused days"], "answerable": true}
+{"id": "q026", "kind": "paraphrase", "question": "I woke up with a fever, who do I have to tell and by when?", "relevant_docs": ["hr-sick-leave"], "answer_keywords": ["line manager", "09:00"], "answerable": true}
+{"id": "q027", "kind": "paraphrase", "question": "Can I spend a month working from a beach house in Spain?", "relevant_docs": ["hr-remote-work"], "answer_keywords": ["20 working days"], "answerable": true}
+{"id": "q028", "kind": "paraphrase", "question": "What do I get reimbursed if I drive my own car to a client?", "relevant_docs": ["hr-travel-expenses"], "answer_keywords": ["0.30 euros"], "answerable": true}
+{"id": "q029", "kind": "paraphrase", "question": "Do I get anything for passing a certification the first time?", "relevant_docs": ["hr-training-budget"], "answer_keywords": ["300 euros"], "answerable": true}
+{"id": "q030", "kind": "paraphrase", "question": "My phone with the login app was stolen, how do I get back in?", "relevant_docs": ["it-multi-factor-authentication"], "answer_keywords": ["temporary access pass"], "answerable": true}
+{"id": "q031", "kind": "paraphrase", "question": "Someone took my notebook computer on the train, what now?", "relevant_docs": ["it-device-encryption"], "answer_keywords": ["within 1 hour"], "answerable": true}
+{"id": "q032", "kind": "paraphrase", "question": "I need a tool that is not offered in the self-service list, how do I get it?", "relevant_docs": ["it-software-installation"], "answer_keywords": ["ticket"], "answerable": true}
+{"id": "q033", "kind": "paraphrase", "question": "How quickly must regulators be told about leaked customer data?", "relevant_docs": ["it-incident-response"], "answer_keywords": ["72 hours"], "answerable": true}
+{"id": "q034", "kind": "paraphrase", "question": "Am I allowed to paste merger plans into a public chatbot?", "relevant_docs": ["it-data-classification"], "answer_keywords": ["must not"], "answerable": true}
+{"id": "q035", "kind": "paraphrase", "question": "When are the mailboxes of people who left the company removed?", "relevant_docs": ["it-data-retention"], "answer_keywords": ["90 days"], "answerable": true}
+{"id": "q036", "kind": "paraphrase", "question": "The gateway is overheating, which code would it show?", "relevant_docs": ["product-error-codes"], "answer_keywords": ["E-105"], "answerable": true}
+{"id": "q037", "kind": "paraphrase", "question": "What happens if the new software on the gateway will not start?", "relevant_docs": ["product-firmware-update"], "answer_keywords": ["previous version"], "answerable": true}
+{"id": "q038", "kind": "paraphrase", "question": "Is lightning damage to the gateway covered?", "relevant_docs": ["product-warranty"], "answer_keywords": ["not covered"], "answerable": true}
+{"id": "q039", "kind": "paraphrase", "question": "How heavy is the gateway and how much memory does it have?", "relevant_docs": ["product-specifications"], "answer_keywords": ["310 grams", "2 GB"], "answerable": true}
+{"id": "q040", "kind": "paraphrase", "question": "Our plant is at a standstill and we only have the cheapest plan, when will someone answer?", "relevant_docs": ["support-service-levels"], "answer_keywords": ["next working day"], "answerable": true}
+{"id": "q041", "kind": "paraphrase", "question": "I want my money back for a yearly licence I bought last week.", "relevant_docs": ["support-refund-policy"], "answer_keywords": ["14 days"], "answerable": true}
+{"id": "q042", "kind": "paraphrase", "question": "What happens if we pay a bill two months late?", "relevant_docs": ["support-billing"], "answer_keywords": ["suspended"], "answerable": true}
+{"id": "q043", "kind": "paraphrase", "question": "Where can I charge my electric car at work?", "relevant_docs": ["office-facilities"], "answer_keywords": ["6 charging points"], "answerable": true}
+{"id": "q044", "kind": "paraphrase", "question": "Who signs off a 20000 euro order?", "relevant_docs": ["finance-procurement"], "answer_keywords": ["department heads"], "answerable": true}
+{"id": "q045", "kind": "paraphrase", "question": "When does my pay rise start after a good review?", "relevant_docs": ["hr-performance-review"], "answer_keywords": ["1 April"], "answerable": true}
+{"id": "q046", "kind": "paraphrase", "question": "How much room must be left around the gateway in the cabinet?", "relevant_docs": ["product-installation"], "answer_keywords": ["50 mm"], "answerable": true}
+{"id": "q047", "kind": "paraphrase", "question": "How long before the birth of my child do I have to tell HR about taking time off?", "relevant_docs": ["hr-parental-leave"], "answer_keywords": ["7 weeks"], "answerable": true}
+{"id": "q048", "kind": "paraphrase", "question": "When is a contractor's account switched off automatically?", "relevant_docs": ["it-access-reviews"], "answer_keywords": ["90 days"], "answerable": true}
+{"id": "q049", "kind": "multi", "question": "What are the rules for signing in to the VPN and which second factors are allowed?", "relevant_docs": ["it-vpn-access", "it-multi-factor-authentication"], "answer_keywords": ["second factor"], "answerable": true}
+{"id": "q050", "kind": "multi", "question": "How do I escalate a production-down case and what response time applies on Standard?", "relevant_docs": ["support-escalation", "support-service-levels"], "answer_keywords": ["duty manager"], "answerable": true}
+{"id": "q051", "kind": "multi", "question": "What must I do before a firmware update and what does error E-402 mean afterwards?", "relevant_docs": ["product-firmware-update", "product-error-codes"], "answer_keywords": ["checksum"], "answerable": true}
+{"id": "q052", "kind": "multi", "question": "How long are backups kept and how long are chat messages kept?", "relevant_docs": ["it-backup-policy", "it-data-retention"], "answer_keywords": ["35 days", "2 years"], "answerable": true}
+{"id": "q053", "kind": "unanswerable", "question": "What is the company policy on pet insurance?", "relevant_docs": [], "answer_keywords": [], "answerable": false}
+{"id": "q054", "kind": "unanswerable", "question": "Which programming language is the ERP system written in?", "relevant_docs": [], "answer_keywords": [], "answerable": false}
+{"id": "q055", "kind": "unanswerable", "question": "What is the price of the MW-300 gateway?", "relevant_docs": [], "answer_keywords": [], "answerable": false}
+{"id": "q056", "kind": "unanswerable", "question": "How many employees work in the Lisbon office?", "relevant_docs": [], "answer_keywords": [], "answerable": false}
+{"id": "q057", "kind": "unanswerable", "question": "What is the dress code for the summer party?", "relevant_docs": [], "answer_keywords": [], "answerable": false}
+{"id": "q058", "kind": "unanswerable", "question": "Which stock exchange lists the company shares?", "relevant_docs": [], "answer_keywords": [], "answerable": false}
